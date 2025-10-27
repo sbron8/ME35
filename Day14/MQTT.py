@@ -21,8 +21,8 @@ class MQTTDevice:
         self.MQTT_PORT = 8883
         self.MQTT_USERNAME = secrets.mqtt_username 
         self.MQTT_PASSWORD = secrets.mqtt_password 
-        self.CLIENT_ID = "esp32_client"
-        self.TOPIC_PUB = "/ME35/test"
+        self.CLIENT_ID = "milan"
+        self.TOPIC_PUB = "/ME35/0"
 
         
         self.button = Pin(35, Pin.IN, Pin.PULL_UP)
@@ -36,9 +36,10 @@ class MQTTDevice:
             return
         self.entered_time = now_time
             
-        self.client.publish(self.TOPIC_PUB, b'Hi')
+        self.client.publish(self.TOPIC_PUB, b'{"color":[100,100,0]}')
         print("Button was pressed")
-        
+      
+      
     def connect_wifi(self):
         self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True)
@@ -99,16 +100,17 @@ mqtt_obj = MQTTDevice()
 
 if mqtt_obj.connect_wifi():
     client = mqtt_obj.mqtt_connect()
-    #mqtt_obj.subscribe("/ME35/test")
+    mqtt_obj.subscribe("/ME35/new")
 
 
 
-while True:
-    try:
-        client.check_msg()
-        time.sleep(1)
-    except Exception as e:
-        print(f"Checking message failed: {e}")
+    while True:
+        try:
+            mqtt_obj.publish("/ME35/brandnew", b'hi new topic')
+            client.check_msg()
+            time.sleep(1)
+        except Exception as e:
+            print(f"Checking message failed: {e}")
 
       
             
